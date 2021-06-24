@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 export default function PokemonPage({ pokemon }) {
-  console.log(pokemon);
   const src = pokemon.sprites.front_default;
   return (
     <Box>
