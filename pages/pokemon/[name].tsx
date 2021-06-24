@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Badge } from '@chakra-ui/react';
 import Image from 'next/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
@@ -7,7 +7,7 @@ export default function PokemonPage({ pokemon }) {
   return (
     <Box>
       <h1>{pokemon.name.toUpperCase()}</h1>
-      <Image src={src} alt={pokemon.name} width="200" height="200"></Image>
+      {src ? <Image src={src} alt={pokemon.name} width="200" height="200"></Image> : <Badge colorScheme="red">No picture available</Badge>} 
     </Box>
   );
 }
