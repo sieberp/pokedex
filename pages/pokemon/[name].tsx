@@ -1,6 +1,6 @@
 import { Box, Badge } from '@chakra-ui/react';
 import Image from 'next/image';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
 
 export default function PokemonPage({ pokemon }) {
   const src = pokemon.sprites.front_default;
@@ -12,19 +12,20 @@ export default function PokemonPage({ pokemon }) {
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1200');
-  const data = await res.json();
-  const pokemons = data.results;
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1200');
+//   const data = await res.json();
+//   const pokemons = data.results;
 
-  const paths = pokemons.map((pokemon) => ({
-    params: { name: pokemon.name },
-  }));
+//   const paths = pokemons.map((pokemon) => ({
+//     params: { name: pokemon.name },
+//   }));
 
-  return { paths, fallback: false };
-}
+//   return { paths, fallback: false };
+// }
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  console.log(params);
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.name}`);
   const pokemon = await res.json();
 
