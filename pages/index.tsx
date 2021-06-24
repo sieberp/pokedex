@@ -12,28 +12,43 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react';
-import { GetStaticProps } from 'next';
+import { GetStaticProps, InferGetServerSidePropsType } from 'next';
 
-export default function Home({ data }) {
-  const [pokemonList, setPokemonList] = React.useState(data);
-  const [currentPage, setCurrentPage] = React.useState(1);
+interface Props {
+  data: {
+    count: number;
+    next?: string;
+    previous?: string;
+    results: {
+      name: string;
+      url: string;
+    }[];
+  };
+}
+
+export default function Home({ data }: Props) {
+  const [pokemonList, setPokemonList]: [typeof data, (data) => void] =
+    React.useState(data);
+  const [currentPage, setCurrentPage]: [number, (number) => void] =
+    React.useState(1);
   const limit = 20;
 
   async function nextPage() {
     const res = await fetch(pokemonList.next);
-    const newData = await res.json();
+    const newData: typeof data = await res.json();
 
     setCurrentPage(currentPage + 1);
     setPokemonList(newData);
   }
   async function prevPage() {
     const res = await fetch(pokemonList.previous);
-    const newData = await res.json();
+    const newData: typeof data = await res.json();
 
     currentPage > 0 ? setCurrentPage(currentPage - 1) : null;
     setPokemonList(newData);
   }
 
+  console.log(data);
   return (
     <Box margin="6">
       <Heading as="h1" marginBottom="6">
@@ -62,6 +77,7 @@ export default function Home({ data }) {
       >
         {pokemonList.results.map((pokemon, index) => (
           <Flex
+            key={pokemon.name}
             borderRadius="lg"
             shadow="lg"
             padding="6"
@@ -94,7 +110,7 @@ export default function Home({ data }) {
         <Text margin="auto" padding="0 2rem">
           Page {currentPage} of {Math.floor(pokemonList.count / limit)}
         </Text>
-        <Button colorScheme="gray" onClick={nextPage}>
+        <Button colorScheme="gray" onClick={nextPage} disabled={!nextPage}>
           Next Page
         </Button>
       </ButtonGroup>
