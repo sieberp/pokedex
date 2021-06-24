@@ -27,12 +27,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  // params contains the post `id`.
-  // If the route is like /posts/1, then params.id is 1
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.name}`);
   const pokemon = await res.json();
 
-  console.log(pokemon);
-  // Pass post data to the page via props
   return { props: { pokemon } };
 }
