@@ -88,7 +88,7 @@ export default function Home({ data }: Props) {
           Page {currentPage} of {Math.floor(pokemonList.count / limit)}
         </Text>
         <Button colorScheme="gray" onClick={nextPage} disabled={!nextPage}>
-          Next Page aher
+          Next Page
         </Button>
       </ButtonGroup>
     </Box>

@@ -17,18 +17,21 @@ import {
   ListItem,
   Text,
 } from '@chakra-ui/react';
+import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import { PokeAPI } from 'pokeapi-types';
 
 interface Props {
   pokemon: PokeAPI.Pokemon;
   evolutionData?: PokeAPI.EvolutionChain;
+  evolutionNames: Array<string>;
 }
 
-export default function PokemonPage({ pokemon, evolutionData }: Props) {
+export default function PokemonPage({ pokemon, evolutionNames }: Props) {
   const src = pokemon.sprites.front_default;
-  console.log(evolutionData.chain);
+  console.log(pokemon);
   return (
     <Grid
       width={{
@@ -47,7 +50,7 @@ export default function PokemonPage({ pokemon, evolutionData }: Props) {
       <Box>
         <Heading gridArea="heading">{pokemon.name.toUpperCase()}</Heading>
         <Heading as="h3" gridArea="heading" color="gray" size="md">
-          #{pokemon.order}
+          Order #{pokemon.order}
         </Heading>
       </Box>
       {src ? (
@@ -90,7 +93,10 @@ export default function PokemonPage({ pokemon, evolutionData }: Props) {
       </Grid>
       <Accordion allowToggle gridArea="abilites">
         <AccordionItem>
-          <AccordionButton _hover={{ background: 'teal.50' }}>
+          <AccordionButton
+            _hover={{ background: 'teal.50' }}
+            id="accordion-button-abilities"
+          >
             Abilities
           </AccordionButton>
           <AccordionPanel>
@@ -106,7 +112,10 @@ export default function PokemonPage({ pokemon, evolutionData }: Props) {
       </Accordion>
       <Accordion allowToggle gridArea="moves">
         <AccordionItem>
-          <AccordionButton _hover={{ background: 'teal.50' }}>
+          <AccordionButton
+            _hover={{ background: 'teal.50' }}
+            id="accordion-button-moves"
+          >
             Moves
           </AccordionButton>
           <AccordionPanel>
@@ -124,22 +133,61 @@ export default function PokemonPage({ pokemon, evolutionData }: Props) {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Text></Text>
+      <Box gridArea="evolution">
+        <Heading as="h3" fontSize="2xl" marginTop="6" marginBottom="4">
+          Evolution Line
+        </Heading>
+        <UnorderedList listStyleType="none" display="flex" flexDirection="row">
+          {evolutionNames.map((pokemon, index) => {
+            return (
+              <>
+                <ListItem
+                  key={pokemon}
+                  textTransform="capitalize"
+                  fontSize="xl"
+                  fontWeight="medium"
+                  marginRight="3"
+                  marginLeft="3"
+                  cursor="pointer"
+                  _hover={{
+                    textDecoration: 'underline',
+                  }}
+                >
+                  <Link href={`/pokemon/${pokemon}`}>
+                    <span>{pokemon}</span>
+                  </Link>
+                </ListItem>
+                <Text fontSize="xl">
+                  {index + 1 < evolutionNames.length ? '>' : null}
+                </Text>
+              </>
+            );
+          })}
+        </UnorderedList>
+      </Box>
     </Grid>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  console.log(params);
   const pokemonRes = await fetch(
     `https://pokeapi.co/api/v2/pokemon/${params.name}`
   );
-  const pokemon = await pokemonRes.json();
+  const pokemon: PokeAPI.Pokemon = await pokemonRes.json();
 
-  const evolutionRes = await fetch(
-    `https://pokeapi.co/api/v2/evolution-chain/${pokemon.id}/`
+  const pokemonDataRes = await fetch(
+    `https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}/`
   );
-  const evolutionData = await evolutionRes.json();
+  const pokemonData: PokeAPI.PokemonSpecies = await pokemonDataRes.json();
+  const evolutionRes = await fetch(pokemonData.evolution_chain.url);
+  const evolutionData: PokeAPI.EvolutionChain = await evolutionRes.json();
 
-  return { props: { pokemon, evolutionData } };
+  let evolutionNames = [];
+  let evolutionChain = evolutionData.chain;
+  do {
+    evolutionNames.push(evolutionChain.species.name);
+    evolutionChain = evolutionChain['evolves_to'][0];
+  } while (!!evolutionChain && evolutionChain.hasOwnProperty('evolves_to'));
+
+  return { props: { pokemon, evolutionData, evolutionNames } };
 };
