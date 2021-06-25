@@ -4,13 +4,13 @@ import {
   Button,
   ButtonGroup,
   Box,
-  Heading,
   Divider,
   Text,
 } from '@chakra-ui/react';
 import { GetStaticProps } from 'next';
 import PokemonCard from '../components/PokemonCard';
 import { PokeAPI } from 'pokeapi-types';
+import PaginationGroup from '../components/PaginationGroup';
 
 interface Props {
   data: PokeAPI.NamedAPIResourceList;
@@ -46,21 +46,13 @@ export default function Home({ data }: Props) {
   return (
     <Box margin="6">
       <Divider colorScheme="gray" />
-      <ButtonGroup margin="2rem" fontSize="xl">
-        <Button
-          colorScheme="gray"
-          onClick={prevPage}
-          disabled={!pokemonList.previous}
-        >
-          Previous Page
-        </Button>
-        <Text margin="auto" padding="0 2rem">
-          Page {currentPage} of {Math.floor(pokemonList.count / limit)}
-        </Text>
-        <Button colorScheme="gray" onClick={nextPage}>
-          Next Page
-        </Button>
-      </ButtonGroup>
+      <PaginationGroup
+        currentPage={currentPage}
+        pokemonList={pokemonList}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        limit={limit}
+      ></PaginationGroup>
       <Grid
         templateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gap={6}
@@ -76,21 +68,13 @@ export default function Home({ data }: Props) {
           ></PokemonCard>
         ))}
       </Grid>
-      <ButtonGroup margin="2rem">
-        <Button
-          colorScheme="gray"
-          onClick={prevPage}
-          disabled={!pokemonList.previous}
-        >
-          Previous Page
-        </Button>
-        <Text margin="auto" padding="0 2rem">
-          Page {currentPage} of {Math.floor(pokemonList.count / limit)}
-        </Text>
-        <Button colorScheme="gray" onClick={nextPage} disabled={!nextPage}>
-          Next Page
-        </Button>
-      </ButtonGroup>
+      <PaginationGroup
+        currentPage={currentPage}
+        pokemonList={pokemonList}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        limit={limit}
+      ></PaginationGroup>
     </Box>
   );
 }
