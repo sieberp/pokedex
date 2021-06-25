@@ -1,8 +1,6 @@
 import { Flex, Heading, Button } from '@chakra-ui/react';
 import Link from 'next/link';
 
-import Pokemon from '../types/Pokemon';
-
 interface Props {
   pokemon: {
     name: string;
