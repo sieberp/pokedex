@@ -31,7 +31,6 @@ interface Props {
 
 export default function PokemonPage({ pokemon, evolutionNames }: Props) {
   const src = pokemon.sprites.front_default;
-  console.log(pokemon);
   return (
     <Grid
       width={{
@@ -137,14 +136,19 @@ export default function PokemonPage({ pokemon, evolutionNames }: Props) {
         <Heading as="h3" fontSize="2xl" marginTop="6" marginBottom="4">
           Evolution Line
         </Heading>
-        <UnorderedList listStyleType="none" display="flex" flexDirection="row">
+        <UnorderedList
+          listStyleType="none"
+          display="flex"
+          flexDirection="row"
+          marginLeft="0"
+        >
           {evolutionNames.map((pokemon, index) => {
             return (
               <>
                 <ListItem
                   key={pokemon}
                   textTransform="capitalize"
-                  fontSize="xl"
+                  fontSize={{ base: 'md', md: 'xl' }}
                   fontWeight="medium"
                   marginRight="3"
                   marginLeft="3"
@@ -157,7 +161,7 @@ export default function PokemonPage({ pokemon, evolutionNames }: Props) {
                     <span>{pokemon}</span>
                   </Link>
                 </ListItem>
-                <Text fontSize="xl">
+                <Text fontSize={{ base: 'md', md: 'xl' }}>
                   {index + 1 < evolutionNames.length ? '>' : null}
                 </Text>
               </>
