@@ -2,36 +2,33 @@ import {
   Box,
   Badge,
   Heading,
-  Text,
   Accordion,
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon,
-  chakra,
   Flex,
   Tag,
   Stat,
   StatLabel,
   StatNumber,
-  StatHelpText,
-  StatArrow,
-  StatGroup,
   Grid,
   Progress,
   UnorderedList,
   ListItem,
+  Text,
 } from '@chakra-ui/react';
 import Image from 'next/image';
 import { GetServerSideProps } from 'next';
-import Pokemon from '../../types/Pokemon';
+import { PokeAPI } from 'pokeapi-types';
 
 interface Props {
-  pokemon: Pokemon;
+  pokemon: PokeAPI.Pokemon;
+  evolutionData?: PokeAPI.EvolutionChain;
 }
 
-export default function PokemonPage({ pokemon }: Props) {
+export default function PokemonPage({ pokemon, evolutionData }: Props) {
   const src = pokemon.sprites.front_default;
+  console.log(evolutionData.chain);
   return (
     <Grid
       width={{
@@ -43,8 +40,8 @@ export default function PokemonPage({ pokemon }: Props) {
       shadow="2xl"
       padding="6"
       gridTemplateAreas={{
-        base: `"heading" "img" "type" "stats" "abilites" "moves"`,
-        md: `"heading stats" "img stats" "type type" "abilites moves"`,
+        base: `"heading" "img" "type" "stats" "abilites" "moves" "evolution"`,
+        md: `"heading stats" "img stats" "type type" "abilites moves" "evolution evolution"`,
       }}
     >
       <Box>
@@ -76,7 +73,11 @@ export default function PokemonPage({ pokemon }: Props) {
         gridArea="stats"
       >
         {pokemon.stats.map((item) => (
-          <Stat key={item.stat.name} width="100%">
+          <Stat
+            key={item.stat.name}
+            width="100%"
+            justifyContent="space-between"
+          >
             <StatLabel textTransform="uppercase">{item.stat.name}</StatLabel>
             <StatNumber>{item.base_stat}</StatNumber>
             <Progress
@@ -123,13 +124,22 @@ export default function PokemonPage({ pokemon }: Props) {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+      <Text></Text>
     </Grid>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.name}`);
-  const pokemon = await res.json();
+  console.log(params);
+  const pokemonRes = await fetch(
+    `https://pokeapi.co/api/v2/pokemon/${params.name}`
+  );
+  const pokemon = await pokemonRes.json();
 
-  return { props: { pokemon } };
+  const evolutionRes = await fetch(
+    `https://pokeapi.co/api/v2/evolution-chain/${pokemon.id}/`
+  );
+  const evolutionData = await evolutionRes.json();
+
+  return { props: { pokemon, evolutionData } };
 };

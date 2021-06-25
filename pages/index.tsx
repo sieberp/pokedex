@@ -10,26 +10,21 @@ import {
 } from '@chakra-ui/react';
 import { GetStaticProps } from 'next';
 import PokemonCard from '../components/PokemonCard';
+import { PokeAPI } from 'pokeapi-types';
 
 interface Props {
-  data: {
-    count: number;
-    next?: string;
-    previous?: string;
-    results: {
-      name: string;
-      url: string;
-    }[];
-  };
+  data: PokeAPI.NamedAPIResourceList;
 }
 
 export default function Home({ data }: Props) {
-  const [pokemonList, setPokemonList]: [typeof data, (data) => void] =
-    React.useState(data);
-  const [currentPage, setCurrentPage]: [number, (number) => void] =
+  const [pokemonList, setPokemonList]: [
+    typeof data,
+    (input: typeof data) => void
+  ] = React.useState(data);
+  const [currentPage, setCurrentPage]: [number, (num: number) => void] =
     React.useState(1);
   const limit = 20;
-
+  console.log(pokemonList);
   // Fetch next page of pokemons, updates the currentpage value and the data that is shown
   async function nextPage() {
     const res = await fetch(pokemonList.next);
