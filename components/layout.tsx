@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import { chakra, Heading } from '@chakra-ui/react';
+import Link from 'next/link';
 
 interface Props {
   children: ReactNode;
@@ -7,11 +9,12 @@ interface Props {
 export default function Layout({ children }: Props) {
   return (
     <div>
-      <header>
-        <h1> Navigation</h1>
-      </header>
+      <chakra.header padding="6" shadow="xl">
+        <Heading>
+          <Link href="/">Pokedex</Link>
+        </Heading>
+      </chakra.header>
       {children}
-      <footer>this is the footer</footer>
     </div>
   );
 }

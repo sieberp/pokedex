@@ -8,115 +8,126 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  chakra,
+  Flex,
+  Tag,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
+  StatGroup,
+  Grid,
+  Progress,
+  UnorderedList,
+  ListItem,
 } from '@chakra-ui/react';
 import Image from 'next/image';
 import { GetServerSideProps } from 'next';
+import Pokemon from '../../types/Pokemon';
 
 interface Props {
-  pokemon: {
-    abilities?: {
-      ability: {
-        name: string;
-        url: string;
-      };
-    }[];
-    name: string;
-    order: number;
-    types: {
-      slot: number;
-      type: {
-        name: string;
-      };
-    }[];
-    sprites?: {
-      front_default?: string;
-    };
-    moves?: {
-      move: {
-        name: string;
-        url: string;
-      };
-    }[];
-    stats?: {
-      base_stat: number;
-      effort: number;
-      stat: {
-        name: string;
-        url: string;
-      };
-    }[];
-  };
+  pokemon: Pokemon;
 }
 
 export default function PokemonPage({ pokemon }: Props) {
   const src = pokemon.sprites.front_default;
   return (
-    <Box
-      width="70vw"
+    <Grid
+      width={{
+        base: '95vw',
+        md: '70vw',
+      }}
       borderRadius="xl"
       margin="2rem auto"
       shadow="2xl"
       padding="6"
+      gridTemplateAreas={{
+        base: `"heading" "img" "type" "stats" "abilites" "moves"`,
+        md: `"heading stats" "img stats" "type type" "abilites moves"`,
+      }}
     >
-      <Heading>{pokemon.name.toUpperCase()}</Heading>
+      <Box>
+        <Heading gridArea="heading">{pokemon.name.toUpperCase()}</Heading>
+        <Heading as="h3" gridArea="heading" color="gray" size="md">
+          #{pokemon.order}
+        </Heading>
+      </Box>
       {src ? (
-        <Image src={src} alt={pokemon.name} width="200" height="200"></Image>
+        <Box gridArea="img">
+          <Image src={src} alt={pokemon.name} width="200" height="200" />
+        </Box>
       ) : (
-        <Badge colorScheme="red">No picture available</Badge>
+        <Badge gridArea="img" colorScheme="red" margin="10">
+          No picture available
+        </Badge>
       )}
-
-      <Accordion allowToggle>
+      <Flex gridArea="type" margin="6">
+        {pokemon.types.map((item) => (
+          <Tag key={item.type.name} colorScheme="teal" marginRight="3">
+            {item.type.name}
+          </Tag>
+        ))}
+      </Flex>
+      <Grid
+        templateColumns="repeat(auto-fill, minmax(90px, 1fr))"
+        gap="3"
+        padding="6"
+        gridArea="stats"
+      >
+        {pokemon.stats.map((item) => (
+          <Stat key={item.stat.name} width="100%">
+            <StatLabel textTransform="uppercase">{item.stat.name}</StatLabel>
+            <StatNumber>{item.base_stat}</StatNumber>
+            <Progress
+              value={item.base_stat}
+              colorScheme="teal"
+              size="sm"
+            ></Progress>
+          </Stat>
+        ))}
+      </Grid>
+      <Accordion allowToggle gridArea="abilites">
         <AccordionItem>
-          <AccordionButton>Abilities</AccordionButton>
+          <AccordionButton _hover={{ background: 'teal.50' }}>
+            Abilities
+          </AccordionButton>
           <AccordionPanel>
-            <Text fontSize="md">
+            <UnorderedList fontSize="md">
               {pokemon.abilities.map((item) => (
-                <li key={item.ability.name}>{item.ability.name}</li>
+                <ListItem key={item.ability.name} textTransform="capitalize">
+                  {item.ability.name}
+                </ListItem>
               ))}
-            </Text>
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton>Moves</AccordionButton>
-          <AccordionPanel>
-            <Text fontSize="md">
-              {pokemon.moves.map((item) => (
-                <li key={item.move.name}>{item.move.name}</li>
-              ))}
-            </Text>
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton>Types</AccordionButton>
-          <AccordionPanel>
-            <Text fontSize="md">
-              Types:
-              {pokemon.types.map((item) => (
-                <li key={item.type.name}>{item.type.name}</li>
-              ))}
-            </Text>
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton>Stats</AccordionButton>
-          <AccordionPanel>
-            <Text fontSize="md">
-              Stats:
-              {pokemon.stats.map((item) => (
-                <li key={item.stat.name}>
-                  {item.stat.name}: {item.base_stat}, {item.effort}
-                </li>
-              ))}
-            </Text>
+            </UnorderedList>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-    </Box>
+      <Accordion allowToggle gridArea="moves">
+        <AccordionItem>
+          <AccordionButton _hover={{ background: 'teal.50' }}>
+            Moves
+          </AccordionButton>
+          <AccordionPanel>
+            <UnorderedList fontSize="md">
+              {pokemon.moves.map((item) => (
+                <ListItem
+                  key={item.move.name}
+                  textTransform="capitalize"
+                  listStyleImage=">"
+                >
+                  {item.move.name}
+                </ListItem>
+              ))}
+            </UnorderedList>
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+    </Grid>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  console.log(params);
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.name}`);
   const pokemon = await res.json();
 

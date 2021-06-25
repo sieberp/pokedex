@@ -1,7 +1,4 @@
 import React from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
 import {
   Grid,
   Button,
@@ -10,9 +7,9 @@ import {
   Heading,
   Divider,
   Text,
-  Flex,
 } from '@chakra-ui/react';
-import { GetStaticProps, InferGetServerSidePropsType } from 'next';
+import { GetStaticProps } from 'next';
+import PokemonCard from '../components/PokemonCard';
 
 interface Props {
   data: {
@@ -33,6 +30,7 @@ export default function Home({ data }: Props) {
     React.useState(1);
   const limit = 20;
 
+  // Fetch next page of pokemons, updates the currentpage value and the data that is shown
   async function nextPage() {
     const res = await fetch(pokemonList.next);
     const newData: typeof data = await res.json();
@@ -40,6 +38,8 @@ export default function Home({ data }: Props) {
     setCurrentPage(currentPage + 1);
     setPokemonList(newData);
   }
+
+  // Fetch previous page of pokemons, updates the currentpage value and the data that is shown
   async function prevPage() {
     const res = await fetch(pokemonList.previous);
     const newData: typeof data = await res.json();
@@ -48,12 +48,8 @@ export default function Home({ data }: Props) {
     setPokemonList(newData);
   }
 
-  console.log(data);
   return (
     <Box margin="6">
-      <Heading as="h1" marginBottom="6">
-        Pokedex
-      </Heading>
       <Divider colorScheme="gray" />
       <ButtonGroup margin="2rem" fontSize="xl">
         <Button
@@ -76,27 +72,13 @@ export default function Home({ data }: Props) {
         marginTop="6"
       >
         {pokemonList.results.map((pokemon, index) => (
-          <Flex
+          <PokemonCard
             key={pokemon.name}
-            borderRadius="lg"
-            shadow="lg"
-            padding="6"
-            height="250px"
-            justifyContent="space-between"
-            flexDirection="column"
-          >
-            <Heading style={{ textTransform: 'capitalize' }} marginBottom="3">
-              #{index + 1 + (currentPage - 1) * limit} {pokemon.name}
-            </Heading>
-            <Link
-              href={`/pokemon/${pokemon.name}`}
-              key={`${pokemon.name}-${index}`}
-            >
-              <Button as="a" colorScheme="teal">
-                More information
-              </Button>
-            </Link>
-          </Flex>
+            pokemon={pokemon}
+            index={index}
+            currentPage={currentPage}
+            limit={limit}
+          ></PokemonCard>
         ))}
       </Grid>
       <ButtonGroup margin="2rem">
@@ -111,13 +93,14 @@ export default function Home({ data }: Props) {
           Page {currentPage} of {Math.floor(pokemonList.count / limit)}
         </Text>
         <Button colorScheme="gray" onClick={nextPage} disabled={!nextPage}>
-          Next Page
+          Next Page aher
         </Button>
       </ButtonGroup>
     </Box>
   );
 }
 
+// rendering the first page during build for better first load performance
 export const getStaticProps: GetStaticProps = async () => {
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon`);
   const data = await res.json();
