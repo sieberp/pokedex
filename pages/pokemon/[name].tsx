@@ -23,11 +23,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import { PokeAPI } from 'pokeapi-types';
+import { useRouter } from 'next/dist/client/router';
 
 interface Props {
-  pokemon: PokeAPI.Pokemon;
+  pokemon?: PokeAPI.Pokemon;
   evolutionData?: PokeAPI.EvolutionChain;
-  evolutionNames: string[] | string[][];
+  evolutionNames?: string[] | string[][];
   errorCode: number;
   name: string;
 }
@@ -38,6 +39,8 @@ export default function PokemonPage({
   errorCode,
   name,
 }: Props) {
+  const { query } = useRouter();
+  console.log(query);
   if (errorCode) {
     return (
       <Center mt="5rem">
@@ -229,8 +232,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const pokemonRes = await fetch(
     `https://pokeapi.co/api/v2/pokemon/${params.name}`
   );
-  console.log(pokemonRes);
   const errorCode = pokemonRes.ok ? false : pokemonRes.status;
+
   if (errorCode) {
     return {
       props: {

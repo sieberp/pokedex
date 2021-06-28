@@ -1,4 +1,13 @@
 import { Button, ButtonGroup, Text, Center } from '@chakra-ui/react';
+import { PokeAPI } from 'pokeapi-types';
+
+interface Props {
+  currentPage: number;
+  prevPage: () => void;
+  nextPage: () => void;
+  pokemonList: PokeAPI.NamedAPIResourceList;
+  limit: number;
+}
 
 export default function PaginationGroup({
   currentPage,
@@ -6,7 +15,7 @@ export default function PaginationGroup({
   nextPage,
   pokemonList,
   limit,
-}) {
+}: Props) {
   return (
     <Center width="100%">
       <ButtonGroup margin="2rem 0" fontSize="xl">

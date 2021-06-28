@@ -29,7 +29,11 @@ export default function PokemonCard({
       <Heading style={{ textTransform: 'capitalize' }} marginBottom="3">
         #{index + 1 + (currentPage - 1) * limit} {pokemon.name}
       </Heading>
-      <Link href={`/pokemon/${pokemon.name}`} key={`${pokemon.name}-${index}`}>
+      <Link
+        href={`/pokemon/${pokemon.name}`}
+        key={`${pokemon.name}-${index}`}
+        passHref
+      >
         <Button as="a" colorScheme="teal">
           More information
         </Button>
