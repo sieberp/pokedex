@@ -20,7 +20,7 @@ interface Props {
 export default function PokemonListPage({ data }: Props) {
   const { query } = useRouter();
   // value of page is a string so we need to convert it to a number
-  const currentPage: number = parseInt(query.page);
+  const currentPage: number = +query.page;
   const limit = 20;
 
   if (currentPage > Math.floor(data.count / limit)) {
@@ -62,7 +62,7 @@ export default function PokemonListPage({ data }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const page = parseInt(params.page);
+  const page = +params.page;
   let res;
   if (page === 1) {
     res = await fetch(`https://pokeapi.co/api/v2/pokemon`);
