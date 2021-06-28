@@ -44,8 +44,7 @@ export default function Home({ data }: Props) {
   }
 
   return (
-    <Box margin="6">
-      <Divider colorScheme="gray" />
+    <Box margin="6" data-testid="body">
       <PaginationGroup
         currentPage={currentPage}
         pokemonList={pokemonList}
