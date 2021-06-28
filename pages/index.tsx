@@ -5,6 +5,7 @@ import Head from 'next/head';
 import PokemonCard from '../components/PokemonCard';
 import { PokeAPI } from 'pokeapi-types';
 import PaginationGroup from '../components/PaginationGroup';
+import axios from 'axios';
 
 interface Props {
   data: PokeAPI.NamedAPIResourceList;
@@ -54,8 +55,8 @@ export default function Home({ data }: Props) {
 
 // rendering the first page during build for better first load performance
 export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon`);
-  const data = await res.json();
+  const res = await axios(`https://pokeapi.co/api/v2/pokemon`);
+  const data = res.data;
 
   return {
     props: {

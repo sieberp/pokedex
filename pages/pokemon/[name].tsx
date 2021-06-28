@@ -18,6 +18,7 @@ import {
   ListItem,
   Text,
   Center,
+  chakra,
 } from '@chakra-ui/react';
 import React from 'react';
 import Image from 'next/image';
@@ -26,10 +27,10 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { PokeAPI } from 'pokeapi-types';
 import { useRouter } from 'next/dist/client/router';
+import axios from 'axios';
 
 interface Props {
   pokemon?: PokeAPI.Pokemon;
-  evolutionData?: PokeAPI.EvolutionChain;
   evolutionNames?: string[] | string[][];
   errorCode: number;
   name: string;
@@ -44,11 +45,14 @@ export default function PokemonPage({
   const router = useRouter();
   if (errorCode) {
     return (
-      <Center mt="5rem">
+      <Center m={6} flexDir="column">
         <Head>
           <title>{name} does not exist</title>
         </Head>
-        <Heading>The pokemon with name {name} does not exist</Heading>;
+        <Heading>The pokemon with name {name} does not exist</Heading>
+        <Button onClick={() => router.back()} margin={6}>
+          Go Back
+        </Button>
       </Center>
     );
   } else {
@@ -86,7 +90,12 @@ export default function PokemonPage({
               <Image src={src} alt={pokemon.name} width="200" height="200" />
             </Box>
           ) : (
-            <Badge gridArea="img" colorScheme="red" margin="10">
+            <Badge
+              gridArea="img"
+              colorScheme="red"
+              margin="10"
+              data-testid="no-picture-info"
+            >
               No picture available
             </Badge>
           )}
@@ -170,74 +179,40 @@ export default function PokemonPage({
             <Heading as="h3" fontSize="2xl" marginTop="6" marginBottom="4">
               Evolution Line
             </Heading>
-            {Array.isArray(evolutionNames[0]) ? (
-              evolutionNames.map((evolutionLine, lineIndex) => {
-                return (
-                  <UnorderedList
-                    listStyleType="none"
-                    display="flex"
-                    flexDirection="row"
-                    marginLeft="0"
-                    key={`${Math.random()}-${lineIndex}`}
-                  >
-                    {evolutionLine.map((pokemon, index) => {
-                      return (
-                        <>
-                          <ListItem
-                            textTransform="capitalize"
-                            key={`${pokemon}-${lineIndex}`}
-                            fontSize={{ base: 'md', md: 'xl' }}
-                            fontWeight="medium"
-                            marginRight="3"
-                            marginLeft="3"
-                            cursor="pointer"
-                            _hover={{
-                              textDecoration: 'underline',
-                            }}
-                          >
-                            <Link href={`/pokemon/${pokemon}`}>{pokemon}</Link>
-                          </ListItem>
-                          <Text fontSize={{ base: 'md', md: 'xl' }}>
-                            {index + 1 < evolutionLine.length ? '>' : null}
-                          </Text>
-                        </>
-                      );
-                    })}
-                  </UnorderedList>
-                );
-              })
-            ) : (
-              <UnorderedList
-                listStyleType="none"
-                display="flex"
-                flexDirection="row"
-                marginLeft="0"
-              >
-                {evolutionNames.map((pokemon, index) => {
-                  return (
-                    <>
-                      <ListItem
-                        key={pokemon}
-                        textTransform="capitalize"
-                        fontSize={{ base: 'md', md: 'xl' }}
-                        fontWeight="medium"
-                        marginRight="3"
-                        marginLeft="3"
-                        cursor="pointer"
-                        _hover={{
-                          textDecoration: 'underline',
-                        }}
-                      >
-                        <Link href={`/pokemon/${pokemon}`}>{pokemon}</Link>
+            {evolutionNames.map((evolutionLine, lineIndex) => {
+              return (
+                <UnorderedList
+                  key={`${evolutionLine[0]}-${lineIndex}`}
+                  listStyleType="none"
+                  display="flex"
+                  flexDirection="row"
+                  marginLeft="0"
+                >
+                  {evolutionLine.map((pokemon, index) => {
+                    return (
+                      <ListItem key={`${pokemon}-${index}`} display="flex">
+                        <Text
+                          textTransform="capitalize"
+                          fontSize={{ base: 'md', md: 'xl' }}
+                          fontWeight="medium"
+                          marginRight="3"
+                          marginLeft="3"
+                          cursor="pointer"
+                          _hover={{
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          <Link href={`/pokemon/${pokemon}`}>{pokemon}</Link>
+                        </Text>
+                        <Text fontSize={{ base: 'md', md: 'xl' }}>
+                          {index + 1 < evolutionLine.length ? '>' : null}
+                        </Text>
                       </ListItem>
-                      <Text fontSize={{ base: 'md', md: 'xl' }}>
-                        {index + 1 < evolutionNames.length ? '>' : null}
-                      </Text>
-                    </>
-                  );
-                })}
-              </UnorderedList>
-            )}
+                    );
+                  })}
+                </UnorderedList>
+              );
+            })}
           </Box>
         </Grid>
       </>
@@ -246,12 +221,12 @@ export default function PokemonPage({
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  console.log(params);
-  const pokemonRes = await fetch(
+  const pokemonRes = await axios(
     `https://pokeapi.co/api/v2/pokemon/${params.name}`
   );
-  const errorCode = pokemonRes.ok ? false : pokemonRes.status;
-
+  // if there is an error code return it to the page
+  // name returned to give custom error page
+  const errorCode = pokemonRes.status === 200 ? false : pokemonRes.status;
   if (errorCode) {
     return {
       props: {
@@ -260,37 +235,33 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       },
     };
   }
-  const pokemon: PokeAPI.Pokemon = await pokemonRes.json();
 
-  const pokemonDataRes = await fetch(
+  // get the data for the requested pokemon
+  const pokemon: PokeAPI.Pokemon = pokemonRes.data;
+  const pokemonDataRes = await axios(
     `https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}/`
   );
-  const pokemonData: PokeAPI.PokemonSpecies = await pokemonDataRes.json();
-  const evolutionRes = await fetch(pokemonData.evolution_chain.url);
-  const evolutionData: PokeAPI.EvolutionChain = await evolutionRes.json();
+  const pokemonData: PokeAPI.PokemonSpecies = pokemonDataRes.data;
 
+  // get the evolution data for the requested pokemon
+  const evolutionRes = await axios(pokemonData.evolution_chain.url);
+  const evolutionData: PokeAPI.EvolutionChain = evolutionRes.data;
+
+  // in some cases there is more than one evolution chain
   let evolutionNames: string[][] & string[] = [];
   let evolutionChain = evolutionData.chain;
 
-  if (evolutionChain.evolves_to.length > 1) {
-    let evolutionChainLength = evolutionChain.evolves_to.length;
-    for (let i = 0; i < evolutionChainLength; i++) {
-      var names: string[] = [];
-      let evolutions = evolutionChain;
-      console.log('evolutions' + evolutions);
-      do {
-        names.push(evolutions.species.name);
-        evolutions = evolutions['evolves_to'][i];
-      } while (!!evolutions && evolutions.hasOwnProperty('evolves_to'));
-      console.log(evolutionNames);
-      evolutionNames.push(names);
-    }
-  } else {
+  let evolutionChainLength = evolutionChain.evolves_to.length;
+  for (let i = 0; i < evolutionChainLength; i++) {
+    var names: string[] = [];
+    let evolutions = evolutionChain;
+    // add all species to the array till the last level of evolution
     do {
-      evolutionNames.push(evolutionChain.species.name);
-      evolutionChain = evolutionChain['evolves_to'][0];
-    } while (!!evolutionChain && evolutionChain.hasOwnProperty('evolves_to'));
+      names.push(evolutions.species.name);
+      evolutions = evolutions['evolves_to'][i];
+    } while (!!evolutions && evolutions.hasOwnProperty('evolves_to'));
+    evolutionNames.push(names);
   }
 
-  return { props: { pokemon, evolutionData, evolutionNames, errorCode } };
+  return { props: { pokemon, evolutionNames } };
 };

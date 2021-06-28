@@ -63,19 +63,21 @@ export default function PokemonListPage({ data }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  // value of params.page is a string so we convert it to a number
   const page = +params.page;
   let res;
+  // for the first page we fetch without params
   if (page === 1) {
     res = await fetch(`https://pokeapi.co/api/v2/pokemon`);
-  } else {
+  }
+  // all others we fetch the data for the current page
+  else {
     res = await fetch(
       `https://pokeapi.co/api/v2/pokemon?offset=${page * 20}&limit=20`
     );
   }
 
   const data = await res.json();
-
-  console.log(data);
 
   return {
     props: {

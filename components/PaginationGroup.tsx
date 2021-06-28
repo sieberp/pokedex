@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Text, Center } from '@chakra-ui/react';
 import { useRouter } from 'next/dist/client/router';
-import { PokeAPI } from 'pokeapi-types';
 
 interface Props {
   currentPage: number;

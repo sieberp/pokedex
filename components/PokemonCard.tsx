@@ -11,12 +11,7 @@ interface Props {
   limit: number;
 }
 
-export default function PokemonCard({
-  pokemon,
-  currentPage,
-  index,
-  limit,
-}: Props) {
+export default function PokemonCard({ pokemon, index }: Props) {
   return (
     <Flex
       borderRadius="lg"
@@ -27,7 +22,7 @@ export default function PokemonCard({
       flexDirection="column"
     >
       <Heading style={{ textTransform: 'capitalize' }} marginBottom="3">
-        #{index + 1 + (currentPage - 1) * limit} {pokemon.name}
+        {pokemon.name}
       </Heading>
       <Link
         href={`/pokemon/${pokemon.name}`}
