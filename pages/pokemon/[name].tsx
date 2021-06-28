@@ -51,7 +51,9 @@ export default function PokemonPage({
     const src = pokemon.sprites.front_default;
     return (
       <>
-        <Button onClick={() => router.back()}>Go Back</Button>
+        <Button margin={6} onClick={() => router.back()}>
+          Go Back
+        </Button>
         <Grid
           width={{
             base: '95vw',
