@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { chakra, Heading } from '@chakra-ui/react';
 import Link from 'next/link';
 
@@ -7,14 +7,16 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
+  const PageContext = React.createContext(1);
+  const [page, setPage]: [number, (a: number) => void] = React.useState();
   return (
-    <div>
+    <PageContext.Provider value={page}>
       <chakra.header padding="6" shadow="xl">
         <Heading>
           <Link href="/">Pokedex</Link>
         </Heading>
       </chakra.header>
       {children}
-    </div>
+    </PageContext.Provider>
   );
 }

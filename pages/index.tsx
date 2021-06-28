@@ -17,65 +17,40 @@ interface Props {
 }
 
 export default function Home({ data }: Props) {
-  const [pokemonList, setPokemonList]: [
-    typeof data,
-    (input: typeof data) => void
-  ] = React.useState(data);
-  const [currentPage, setCurrentPage]: [number, (num: number) => void] =
-    React.useState(1);
-  const limit = 20;
-  console.log(pokemonList);
-  // Fetch next page of pokemons, updates the currentpage value and the data that is shown
-  async function nextPage() {
-    const res = await fetch(pokemonList.next);
-    const newData: typeof data = await res.json();
-
-    setCurrentPage(currentPage + 1);
-    setPokemonList(newData);
-  }
-
-  // Fetch previous page of pokemons, updates the currentpage value and the data that is shown
-  async function prevPage() {
-    const res = await fetch(pokemonList.previous);
-    const newData: typeof data = await res.json();
-
-    currentPage > 0 ? setCurrentPage(currentPage - 1) : null;
-    setPokemonList(newData);
-  }
-
   return (
     <Box margin="6" data-testid="body">
       <PaginationGroup
-        currentPage={currentPage}
-        pokemonList={pokemonList}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        limit={limit}
+        currentPage={1}
+        nextPage={2}
+        prevPage={0}
+        limit={20}
+        total={data.count}
       ></PaginationGroup>
       <Grid
         templateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gap={6}
         marginTop="6"
       >
-        {pokemonList.results.map((pokemon, index) => (
+        {data.results.map((pokemon, index) => (
           <PokemonCard
             key={pokemon.name}
             pokemon={pokemon}
             index={index}
-            currentPage={currentPage}
-            limit={limit}
+            currentPage={1}
+            limit={20}
           ></PokemonCard>
         ))}
       </Grid>
       <PaginationGroup
-        currentPage={currentPage}
-        pokemonList={pokemonList}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        limit={limit}
+        currentPage={1}
+        nextPage={2}
+        prevPage={0}
+        limit={20}
+        total={data.count}
       ></PaginationGroup>
     </Box>
   );
+  return;
 }
 
 // rendering the first page during build for better first load performance
