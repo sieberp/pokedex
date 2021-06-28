@@ -22,6 +22,7 @@ import {
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { PokeAPI } from 'pokeapi-types';
 import { useRouter } from 'next/dist/client/router';
@@ -44,6 +45,9 @@ export default function PokemonPage({
   if (errorCode) {
     return (
       <Center mt="5rem">
+        <Head>
+          <title>{name} does not exist</title>
+        </Head>
         <Heading>The pokemon with name {name} does not exist</Heading>;
       </Center>
     );
@@ -51,6 +55,9 @@ export default function PokemonPage({
     const src = pokemon.sprites.front_default;
     return (
       <>
+        <Head>
+          <title>Details of {pokemon.name.toUpperCase()}</title>
+        </Head>
         <Button margin={6} onClick={() => router.back()}>
           Go Back
         </Button>
