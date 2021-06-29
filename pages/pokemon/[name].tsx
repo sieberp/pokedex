@@ -18,7 +18,6 @@ import {
   ListItem,
   Text,
   Center,
-  chakra,
 } from '@chakra-ui/react';
 import React from 'react';
 import Image from 'next/image';
@@ -92,7 +91,7 @@ export default function PokemonPage({
             </Heading>
           </Box>
           {src ? (
-            <Box gridArea="img">
+            <Box gridArea="img" display="grid" justifyContent="center">
               <Image src={src} alt={pokemon.name} width="200" height="200" />
             </Box>
           ) : (

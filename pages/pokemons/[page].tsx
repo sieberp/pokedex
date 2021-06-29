@@ -77,12 +77,16 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   let res;
   // for the first page we fetch without params
   if (page === 1) {
-    res = await fetch(`https://pokeapi.co/api/v2/pokemon`);
+    res = await fetch(
+      `https://pokeapi.co/api/v2/pokemon?limit=${process.env.limit}`
+    );
   }
   // all others we fetch the data for the current page
   else {
     res = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?offset=${page * 20}&limit=20`
+      `https://pokeapi.co/api/v2/pokemon?offset=${
+        +process.env.limit * page
+      }&limit=${process.env.limit}`
     );
   }
 

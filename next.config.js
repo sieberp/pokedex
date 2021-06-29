@@ -4,6 +4,6 @@ module.exports = {
     domains: ['raw.githubusercontent.com'],
   },
   env: {
-    limit: 20,
+    limit: 100,
   },
 };

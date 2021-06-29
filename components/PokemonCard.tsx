@@ -1,5 +1,6 @@
-import { Flex, Heading, Button } from '@chakra-ui/react';
+import { Center, Flex, Heading, Button } from '@chakra-ui/react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Props {
   pokemon: {
@@ -12,18 +13,26 @@ interface Props {
 }
 
 export default function PokemonCard({ pokemon, index }: Props) {
+  const id = pokemon.url.substring(34, pokemon.url.length - 1);
   return (
     <Flex
       borderRadius="lg"
       shadow="lg"
       padding="6"
-      height="250px"
       justifyContent="space-between"
       flexDirection="column"
     >
-      <Heading style={{ textTransform: 'capitalize' }} marginBottom="3">
+      <Heading textTransform="capitalize" marginBottom="3" textAlign="center">
         {pokemon.name}
       </Heading>
+      <Center margin={3}>
+        <Image
+          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`}
+          width="100"
+          height="100"
+          alt={pokemon.name}
+        ></Image>
+      </Center>
       <Link
         href={`/pokemon/${pokemon.name}`}
         key={`${pokemon.name}-${index}`}

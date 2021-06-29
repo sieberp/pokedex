@@ -13,6 +13,7 @@ interface Props {
 
 export default function Home({ data }: Props) {
   const limit = parseInt(process.env.limit);
+
   return (
     <>
       <Head>
@@ -52,7 +53,9 @@ export default function Home({ data }: Props) {
 
 // rendering the first page during build for better first load performance
 export const getStaticProps: GetStaticProps = async () => {
-  const res = await axios(`https://pokeapi.co/api/v2/pokemon`);
+  const res = await axios(
+    `https://pokeapi.co/api/v2/pokemon?limit=${process.env.limit}`
+  );
   const data = res.data;
 
   return {

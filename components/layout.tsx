@@ -20,7 +20,7 @@ export default function Layout({ children }: Props) {
             borderColor="red"
             onClick={toggleColorMode}
           >
-            Toggle Color Mode
+            {colorMode === 'light' ? 'Dark' : 'Light'} Mode
           </Button>
         </Heading>
       </chakra.header>
