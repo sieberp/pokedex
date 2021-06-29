@@ -2,11 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
 import PokemonCard from '../components/PokemonCard';
 
-jest.mock('next/router', () => ({ push: jest.fn() }));
-
 import { mockedPokemonList } from '../__mocks__/pokemonList.mock';
 import { pokemonMock } from '../__mocks__/pokemon.mock';
-import next from 'next';
 
 describe('Home', () => {
   test('Index page renders all pokemons with correct name', async () => {
@@ -23,7 +20,15 @@ describe('Home', () => {
 
 describe('PokemonCard', () => {
   test('displays the correct name and link', async () => {
-    const pokemonCard = render(<PokemonCard pokemon={{ name: 'name' }} />);
+    const pokemonCard = render(
+      <PokemonCard
+        pokemon={{ name: 'name', url: 'https://mock.api/call' }}
+        currentPage={1}
+        limit={20}
+        key="adfjalkdf"
+        index={1}
+      />
+    );
     const title = await pokemonCard.findByRole('heading');
     const link = await pokemonCard.findByRole('link');
     expect(title.textContent).toBe('name');
@@ -37,7 +42,7 @@ describe('PokemonDetail', () => {
       route: '/pokemon/bulbasaur',
     });
     render();
-    expect(screen.getByTestId('no-picture-info').toBeInTheDocument);
+    expect(screen.getByTestId('no-picture-info')).toBeInTheDocument();
   });
 });
 
