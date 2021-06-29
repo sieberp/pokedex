@@ -81,7 +81,13 @@ export default function PokemonPage({
         >
           <Box>
             <Heading gridArea="heading">{pokemon.name.toUpperCase()}</Heading>
-            <Heading as="h3" gridArea="heading" color="gray" size="md">
+            <Heading
+              as="h3"
+              gridArea="heading"
+              color="gray"
+              size="md"
+              data-testid="order-number"
+            >
               Order #{pokemon.order}
             </Heading>
           </Box>
@@ -139,7 +145,7 @@ export default function PokemonPage({
                 Abilities
               </AccordionButton>
               <AccordionPanel>
-                <UnorderedList fontSize="md">
+                <UnorderedList fontSize="md" data-testid="abilities-list">
                   {pokemon.abilities.map((item) => (
                     <ListItem
                       key={item.ability.name}
@@ -161,7 +167,7 @@ export default function PokemonPage({
                 Moves
               </AccordionButton>
               <AccordionPanel>
-                <UnorderedList fontSize="md">
+                <UnorderedList fontSize="md" data-testid="moves-list">
                   {pokemon.moves.map((item) => (
                     <ListItem
                       key={item.move.name}

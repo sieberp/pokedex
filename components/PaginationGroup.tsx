@@ -3,27 +3,20 @@ import { useRouter } from 'next/dist/client/router';
 
 interface Props {
   currentPage: number;
-  prevPage: number;
-  nextPage: number;
   limit: number;
   total: number;
 }
 
-export default function PaginationGroup({
-  currentPage,
-  prevPage,
-  nextPage,
-  limit,
-  total,
-}: Props) {
+export default function PaginationGroup({ currentPage, limit, total }: Props) {
   const router = useRouter();
   return (
     <Center width="100%">
       <ButtonGroup margin="2rem 0" fontSize="xl">
         <Button
           colorScheme="gray"
-          onClick={() => router.push(`/pokemons/${prevPage}`)}
+          onClick={() => router.push(`/pokemons/${currentPage - 1}`)}
           disabled={currentPage === 1}
+          data-testid="prev-link"
         >
           Previous
         </Button>
@@ -39,8 +32,9 @@ export default function PaginationGroup({
         </Text>
         <Button
           colorScheme="gray"
-          onClick={() => router.push(`/pokemons/${nextPage}`)}
+          onClick={() => router.push(`/pokemons/${currentPage + 1}`)}
           disabled={currentPage === Math.floor(total / limit)}
+          data-testid="next-link"
         >
           Next
         </Button>

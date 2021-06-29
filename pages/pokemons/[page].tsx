@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Box } from '@chakra-ui/react';
+import { Grid, Box, Center, Heading, Button } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import PokemonCard from '../../components/PokemonCard';
@@ -12,26 +12,37 @@ interface Props {
 }
 
 export default function PokemonListPage({ data }: Props) {
-  const { query } = useRouter();
+  const router = useRouter();
+  const { query } = router;
   // value of page is a string so we need to convert it to a number
   const currentPage: number = +query.page;
-  const limit = 20;
+  // env gives us only a string so we need to convert it
+  const limit = parseInt(process.env.limit);
+  console.log(typeof process.env.limit);
 
   if (currentPage > Math.floor(data.count / limit)) {
-    return <h1>Not found</h1>;
+    return (
+      <Center m={6} flexDir="column">
+        <Head>
+          <title>Page does not exist</title>
+        </Head>
+        <Heading>This page does not exist</Heading>
+        <Button onClick={() => router.back()} margin={6}>
+          Go Back
+        </Button>
+      </Center>
+    );
   }
   return (
     <>
       <Head>
         <title>
-          Pokedex | Page {currentPage} of {Math.floor(data.count / 20)}
+          Pokedex | Page {currentPage} of {Math.floor(data.count / limit)}
         </title>
       </Head>
       <Box margin="6" data-testid="body">
         <PaginationGroup
           currentPage={currentPage}
-          nextPage={currentPage + 1}
-          prevPage={currentPage - 1}
           total={data.count}
           limit={limit}
         ></PaginationGroup>
@@ -52,8 +63,6 @@ export default function PokemonListPage({ data }: Props) {
         </Grid>
         <PaginationGroup
           currentPage={currentPage}
-          nextPage={currentPage + 1}
-          prevPage={currentPage - 1}
           limit={limit}
           total={data.count}
         ></PaginationGroup>

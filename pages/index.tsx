@@ -12,17 +12,16 @@ interface Props {
 }
 
 export default function Home({ data }: Props) {
+  const limit = parseInt(process.env.limit);
   return (
     <>
       <Head>
-        <title>Pokedex | Page 1 of {Math.floor(data.count / 20)}</title>
+        <title>Pokedex | Page 1 of {Math.floor(data.count / limit)}</title>
       </Head>
       <Box margin="6" data-testid="body">
         <PaginationGroup
           currentPage={1}
-          nextPage={2}
-          prevPage={0}
-          limit={20}
+          limit={limit}
           total={data.count}
         ></PaginationGroup>
         <Grid
@@ -36,15 +35,13 @@ export default function Home({ data }: Props) {
               pokemon={pokemon}
               index={index}
               currentPage={1}
-              limit={20}
+              limit={limit}
             ></PokemonCard>
           ))}
         </Grid>
         <PaginationGroup
           currentPage={1}
-          nextPage={2}
-          prevPage={0}
-          limit={20}
+          limit={limit}
           total={data.count}
         ></PaginationGroup>
       </Box>

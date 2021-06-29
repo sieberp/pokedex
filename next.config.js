@@ -3,4 +3,7 @@ module.exports = {
   images: {
     domains: ['raw.githubusercontent.com'],
   },
+  env: {
+    limit: 20,
+  },
 };
