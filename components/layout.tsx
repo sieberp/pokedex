@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { chakra, Heading } from '@chakra-ui/react';
+import { chakra, Heading, Button, useColorMode } from '@chakra-ui/react';
 import Link from 'next/link';
 
 interface Props {
@@ -7,16 +7,24 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  const PageContext = React.createContext(1);
-  const [page, setPage]: [number, (a: number) => void] = React.useState();
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
-    <PageContext.Provider value={page}>
+    <>
       <chakra.header padding="6" shadow="xl">
-        <Heading>
+        <Heading justifyContent="space-between" display="flex">
           <Link href="/">Pokedex</Link>
+          <Button
+            colorScheme="whiteAlpha"
+            color="black.400"
+            borderColor="red"
+            onClick={toggleColorMode}
+          >
+            Toggle Color Mode
+          </Button>
         </Heading>
       </chakra.header>
       {children}
-    </PageContext.Provider>
+    </>
   );
 }
