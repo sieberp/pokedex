@@ -1,9 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
 import { render, screen, waitFor } from '@testing-library/react';
 import { getPage } from 'next-page-tester';
 import PokemonCard from '../components/PokemonCard';
 
 import { mockedPokemonList } from '../__mocks__/pokemonList.mock';
 import { pokemonMock } from '../__mocks__/pokemon.mock';
+
+// mocking next image so the test can run
+// eslint-disable-next-line react/display-name
+jest.mock('next/image', () => ({ src, alt }) => <img src={src} alt={alt} />);
 
 describe('Home', () => {
   test('Index page renders all pokemons with correct name', async () => {
